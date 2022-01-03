@@ -28,14 +28,16 @@
         </form>
       </div>
       <div class="vl"></div>
+      
+      
       <div class="signup">
         <h2>Signup</h2>
-        <form>
+        <form @submit.prevent="signup">
           <label for="signup-email">EMAIL</label>
           <input
             placeholder="Enter your email"
             type="email"
-            v-model="signup_form.signup_email"
+            v-model="signup_form.email"
             name="signup-email"
             id="signup-email"
             required
@@ -44,7 +46,7 @@
           <input
             placeholder="Enter your password"
             type="password"
-            v-model="signup_form.signup_password"
+            v-model="signup_form.password"
             name="signup-password"
             id="signup-password"
           />
@@ -64,12 +66,12 @@ export default {
   data: () => {
     return {
       signin_form: {
-        signin_email: "",
-        signin_password: "",
+        email: "",
+        password: "",
       },
       signup_form: {
-        signup_email: "",
-        signup_password: "",
+        email: "",
+        password: "",
       },
     };
   },
@@ -80,9 +82,20 @@ export default {
     ...mapMutations(["authorize", "setUserData"]),
 
     login(e) {
-      e.preventDefault();
       axios
         .post("http://localhost:8000/api/actions/login", this.signin_form)
+        .then((result) => {
+          window.localStorage.setItem("auth-token", result.data.token);
+         
+          this.$router.push({ name: "Home" });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    signup(e) {
+      axios
+        .post("http://localhost:8000/api/actions/signup", this.signup_form)
         .then((result) => {
           window.localStorage.setItem("auth-token", result.data.token);
           this.authorize(true);

@@ -30,23 +30,44 @@
         <option value="category-4">category-4</option>
         <option value="category-5">category-5</option>
       </select>
-      <h2>Process</h2>
+
       <div class="ingridients">
-        <div class="ingrid-input">
-          <h3>Ingridients</h3>
-          <input type="text" v-model="ingridient" />
-          <button @click.prevent="addIngridients">Add +</button>
+        <h2>Ingridients</h2>
+        <div class="ingridients-view">
+          <div class="ingridients-input">
+            <input
+              type="text"
+              v-model="ingridient"
+              placeholder="Enter Ingrident"
+            />
+            <button @click.prevent="addIngridients"></button>
+          </div>
+          <div class="ingridients-list">
+            <p v-for="step in ingridients" :key="step.id">
+              <span class="remove-ingridient" @click="remove">X</span>
+              {{ step }}
+            </p>
+          </div>
         </div>
-        <div class="ingridients-list">
-            <!-- Deleting already entered ingridient -->
-          <p v-for="ingridient in ingridients" :key="ingridient.id">
-            <span
-              class="remove-ingridient"
-              @click="remove"
-              >X</span
-            >
-            {{ ingridient }}
-          </p>
+      </div>
+      <div class="steps">
+        <h2>Steps</h2>
+        <div class="steps-view">
+          <div class="ingridients-input">
+            <input
+              type="text"
+              v-model="step"
+              placeholder="Enter Ingrident"
+            />
+            <button @click.prevent="addSteps"></button>
+          </div>
+          <ul class="steps-list">
+            <li v-for="step in steps" :key="step.id">
+              <h3>Step {{ steps.indexOf(step) + 1 }}</h3>
+              {{ step }}
+              <span class="remove-step" @click="removeStep">X</span>
+            </li>
+          </ul>
         </div>
       </div>
     </form>
@@ -71,6 +92,12 @@ export default {
         "1/2 cup chopped fresh parsley",
         "Extra Parmesan (for garnish)",
       ],
+      step: "",
+      steps: [
+        "Preheat oven to 350 degrees F (175 degrees C). Grease a 9x13-inch baking dish.",
+        "In a bowl, mix together butter, Dijon mustard, Worcestershire sauce, poppy seeds, and dried onion. Separate the tops from bottoms of the rolls, and place the bottom pieces into the prepared baking dish. Layer about half the ham onto the rolls. Arrange the Swiss cheese over the ham, and top with remaining ham slices in a layer. Place the tops of the rolls onto the sandwiches. Pour the mustard mixture evenly over the rolls.",
+        "Bake in the preheated oven until the rolls are lightly browned and the cheese has melted, about 20 minutes. Slice into individual rolls through the ham and cheese layers to serve.",
+      ],
     };
   },
   methods: {
@@ -78,11 +105,17 @@ export default {
       console.log(e);
     },
     addIngridients(e) {
-      e.preventDefault();
-      this.ingridients.push(this.ingridient);
+      if (this.ingridient !== "") {
+        this.ingridients.push(this.ingridient);
+      }
       this.ingridient = "";
-      //   index++;
-      // console.log(this.ingridient);
+    },
+    addSteps(e) {
+      if (this.step !== "") {
+        console.log(step)
+        this.steps.push(this.step);
+      }
+      this.step = "";
     },
   },
 };
@@ -95,7 +128,7 @@ export default {
 .new-recipe-p1 {
   display: flex;
   flex-direction: column;
-  width: 40%;
+  width: 60%;
   margin: auto;
   gap: 30px;
 }
@@ -110,7 +143,7 @@ input {
   height: 50px;
   border: none;
   border-radius: 20px;
-  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 10%), 0 6px 20px 0 rgb(0 0 0 / 19%);
   padding-left: 35px;
   padding-right: 35px;
   line-height: 45px;
@@ -121,15 +154,25 @@ input {
 #textarea {
   height: 150px;
 }
+
 .ingridients {
   display: flex;
+  flex-direction: column;
+}
+.ingridients-view {
+  display: flex;
+}
+.ingrid-input {
+  flex: 2;
+}
+.ingridients-input > button {
+  display: none;
 }
 .ingridients-list {
   display: flex;
   gap: 10px;
   flex-direction: column-reverse;
   flex-wrap: wrap;
-  align-items: center;
   flex: 3;
 }
 .ingridients-list > p {
@@ -149,6 +192,49 @@ input {
 }
 
 .remove-ingridient:hover {
+  color: red;
+  background: white;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+}
+.steps-view {
+  display: flex;
+}
+.steps-input {
+  flex: 2;
+}
+/* .steps-input > button {
+  display: block;
+} */
+.steps-list {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  flex-wrap: wrap;
+  flex: 3;
+}
+.steps-list > li {
+  background: rgb(230 230 230);
+  padding: 5px 10px;
+  margin: 5px 5px;
+  color: #626262;
+  margin-bottom: 3px;
+  font-size: 120%;
+  border-radius: 2px;
+  box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+}
+.remove-step {
+  width: 10px;
+  height: 10px;
+  display: inline;
+}
+
+.remove-step:hover {
   color: red;
   background: white;
   cursor: pointer;
