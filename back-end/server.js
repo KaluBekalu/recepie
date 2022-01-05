@@ -55,14 +55,14 @@ const JWT_EXPIRE_TIME = "60m";
 
 const makeGraphQLClient =
   ({ url, headers }) =>
-  async ({ query, variables }) => {
-    const request = await fetch(url, {
-      headers,
-      method: "POST",
-      body: JSON.stringify({ query, variables }),
-    });
-    return request.json();
-  };
+    async ({ query, variables }) => {
+      const request = await fetch(url, {
+        headers,
+        method: "POST",
+        body: JSON.stringify({ query, variables }),
+      });
+      return request.json();
+    };
 
 const sendQuery = makeGraphQLClient({
   url: HASURA_ENDPOINT,
@@ -186,25 +186,27 @@ app.post("/api/actions/new", async (req, res) => {
 });
 
 app.get("/api/actions/recipes", async (req, res) => {
-  const request = await sendQuery({
+  const result = await sendQuery({
     query: `
     query {
       recipes {
-        category
-        created_at
-        creator
-        description
-        duration
         id
+        duration
+        description
+        creator
+        created_at
+        category
         title
         updated_at
       }
     }
     
+    
     `,
   });
+  // console.log(request)
 
-  const dbData = request.data.recipes;
+  const dbData = result.data.recipes;
   if (!dbData) return res.status(400).json({ error: "Nothing Found!" });
   console.log(dbData);
 

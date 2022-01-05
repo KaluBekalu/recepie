@@ -47,8 +47,9 @@ export default {
   },
   mounted() {
     axios
-      .post("http://localhost:8000/api/actions/recipes")
+      .get("http://localhost:8000/api/actions/recipes")
       .then((res) => {
+        console.log(res.status)
         const data = JSON.stringify(res.data.recipes);
         this.recipes = JSON.parse(data);
         console.log(this.recipes);
