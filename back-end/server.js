@@ -2,17 +2,49 @@ const express = require("express");
 const fetch = require("cross-fetch");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-var cors = require("cors");
-
+const cors = require("cors");
+const multer = require("multer");
 const app = express();
 const PORT = 8000;
+
+app.use(express.static("uploads"));
+
 var corsOptions = {
-  origin: ["http://localhost:8080","http://localhost:3000" ],
+  origin: ["http://localhost:8080", "http://localhost:3000"],
   optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
+
+const DIR = "./uploads";
+
+// File Upload
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, DIR);
+  },
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(" ").join("-");
+    cb(null, fileName);
+  },
+});
+
+var upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype == "image/png" ||
+      file.mimetype == "image/jpg" ||
+      file.mimetype == "image/jpeg"
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error("Only .png, .jpg and .jpeg format allowed!"));
+    }
+  },
+});
 
 const HASURA_ENDPOINT = "https://recepie.hasura.app/v1/graphql";
 const HASURA_ADMIN_SECRET =
@@ -66,7 +98,6 @@ app.post("/api/actions/signup", async (req, res) => {
           password
         }
       }`,
-    // variables: { user },
   });
 
   if (request.errors) {
@@ -114,7 +145,70 @@ app.post("/api/actions/login", async (req, res) => {
   usrId = await dbUser.id;
   usrEmail = await dbUser.email;
   return res.json({ token, usrId, usrEmail });
-  // return res.json({ token });
+});
+
+app.post("/api/actions/new", async (req, res) => {
+  // const reqFiles = [];
+  // const url = req.protocol + "://" + req.get("host");
+  // for (var i = 0; i < req.files.length; i++) {
+  //   reqFiles.push(url + "/public/" + req.files[i].filename);
+  // }
+  // const request = await sendQuery({
+  //   query: `
+  //   mutation {
+  //     insert_recipes_one(object: {
+  //       category: "Cat1",
+  //       description: "Test description",
+  //       duration: "12",
+  //       title: "Test title",
+  //       creator: "96ee592d-1e4d-432b-b18f-1534ea8444ed"}) {
+  //         id
+  //         title
+  //         category
+  //         description
+  //         duration
+  //         creator
+  //     }
+  //   }
+  //   `,
+  // });
+
+  console.log(req.body);
+
+  // if (request.errors) {
+  //   console.log(request.errors[0].message);
+  //   res.json({ Error: request.errors[0].message });
+  // }
+
+  // console.log(request);
+
+  // res.json(request);
+});
+
+app.get("/api/actions/recipes", async (req, res) => {
+  const request = await sendQuery({
+    query: `
+    query {
+      recipes {
+        category
+        created_at
+        creator
+        description
+        duration
+        id
+        title
+        updated_at
+      }
+    }
+    
+    `,
+  });
+
+  const dbData = request.data.recipes;
+  if (!dbData) return res.status(400).json({ error: "Nothing Found!" });
+  console.log(dbData);
+
+  return res.json({ recipes: dbData });
 });
 
 app.listen(PORT, "0.0.0.0", () => {

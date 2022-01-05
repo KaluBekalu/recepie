@@ -13,116 +13,15 @@
     </div>
 
     <div class="container">
-      <div class="card">
+      <div v-for="recipe in recipes" :key="recipe.id" class="card">
         <div class="image">
           <img src="../assets/beef-burger.jpg" alt="" />
           <i class="far fa-star"></i>
           <i class="far fa-heart"></i>
         </div>
         <div class="card-bottom">
-          <h3 class="title">Christmas Dinner Made Easy</h3>
-          <p class="description">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
-            necessitatibus.
-          </p>
-        </div>
-      </div>
-      <div class="card">
-        <div class="image">
-          <img src="../assets/beef-burger.jpg" alt="" />
-          <i class="far fa-star"></i>
-          <i class="far fa-heart"></i>
-        </div>
-        <div class="card-bottom">
-          <h3 class="title">Christmas Dinner Made Easy</h3>
-          <p class="description">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
-            necessitatibus.
-          </p>
-        </div>
-      </div>
-      <div class="card">
-        <div class="image">
-          <img src="../assets/beef-burger.jpg" alt="" />
-          <i class="far fa-star"></i>
-          <i class="far fa-heart"></i>
-        </div>
-        <div class="card-bottom">
-          <h3 class="title">Christmas Dinner Made Easy</h3>
-          <p class="description">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
-            necessitatibus.
-          </p>
-        </div>
-      </div>
-      <div class="card">
-        <div class="image">
-          <img src="../assets/beef-burger.jpg" alt="" />
-          <i class="far fa-star"></i>
-          <i class="far fa-heart"></i>
-        </div>
-        <div class="card-bottom">
-          <h3 class="title">Christmas Dinner Made Easy</h3>
-          <p class="description">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
-            necessitatibus.
-          </p>
-        </div>
-      </div>
-      <div class="card">
-        <div class="image">
-          <img src="../assets/beef-burger.jpg" alt="" />
-          <i class="far fa-star"></i>
-          <i class="far fa-heart"></i>
-        </div>
-        <div class="card-bottom">
-          <h3 class="title">Christmas Dinner Made Easy</h3>
-          <p class="description">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
-            necessitatibus.
-          </p>
-        </div>
-      </div>
-      <div class="card">
-        <div class="image">
-          <img src="../assets/beef-burger.jpg" alt="" />
-          <i class="far fa-star"></i>
-          <i class="far fa-heart"></i>
-        </div>
-        <div class="card-bottom">
-          <h3 class="title">Christmas Dinner Made Easy</h3>
-          <p class="description">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
-            necessitatibus.
-          </p>
-        </div>
-      </div>
-      <div class="card">
-        <div class="image">
-          <img src="../assets/beef-burger.jpg" alt="" />
-          <i class="far fa-star"></i>
-          <i class="far fa-heart"></i>
-        </div>
-        <div class="card-bottom">
-          <h3 class="title">Christmas Dinner Made Easy</h3>
-          <p class="description">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
-            necessitatibus.
-          </p>
-        </div>
-      </div>
-      <div class="card">
-        <div class="image">
-          <img src="../assets/beef-burger.jpg" alt="" />
-          <i class="far fa-star"></i>
-          <i class="far fa-heart"></i>
-        </div>
-        <div class="card-bottom">
-          <h3 class="title">Christmas Dinner Made Easy</h3>
-          <p class="description">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio
-            necessitatibus.
-          </p>
+          <h3 class="title">{{ recipe.title }}</h3>
+          <p class="description">{{ recipe.description }}</p>
         </div>
       </div>
     </div>
@@ -133,12 +32,30 @@
 <script>
 const auth_token = localStorage.getItem("auth-token");
 import { mapMutations, mapState } from "vuex";
+import axios from "axios";
 export default {
+  data() {
+    return {
+      recipes: [],
+    };
+  },
   computed: {
     ...mapState(["isAuthorized", "userId"]),
   },
   methods: {
     ...mapMutations(["authorize"]),
+  },
+  mounted() {
+    axios
+      .post("http://localhost:8000/api/actions/recipes")
+      .then((res) => {
+        const data = JSON.stringify(res.data.recipes);
+        this.recipes = JSON.parse(data);
+        console.log(this.recipes);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   },
 };
 </script>
@@ -189,6 +106,7 @@ export default {
 
 .card-bottom {
   font-family: "Raleway", sans-serif;
+  padding: 0 10px;
 }
 .card-bottom > p {
   font-weight: 400;
